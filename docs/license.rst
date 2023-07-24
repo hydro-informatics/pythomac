@@ -1,3 +1,16 @@
+Disclaimer and License
+======================
+
+This package contains code blocks that were originally developed by the TELEMAC-MASCARET Consortium, and distributed under a GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007, which, therefore, equally applies to pythomac.
+
+Disclaimer
+----------
+
+No warranty is expressed or implied regarding the usefulness or completeness of the information provided for *pythomac* and its documentation. References to commercial products do not imply endorsement by the Authors of *pythomac*. The concepts, materials, and methods used in the codes and described in the docs are for informational purposes only. The Authors have made substantial effort to ensure the accuracy of the code and the docs and the Authors shall not be held liable, nor their employers or funding sponsors, for calculations and/or decisions made on the basis of application of *pythomac*. The information is provided "as is" and anyone who chooses to use the information is responsible for her or his own choices as to what to do with the code, docs, and data and the individual is responsible for the results that follow from their decisions.
+
+License
+-------
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
