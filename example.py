@@ -16,7 +16,7 @@ telemac_cas = "steady2d.cas"
 
 print(simulation_dir)
 
-extract_fluxes(
+fluxes_df = extract_fluxes(
     model_directory=simulation_dir,
     cas_name=telemac_cas,
     plotting=True
