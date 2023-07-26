@@ -41,3 +41,14 @@ Extract Fluxes
 .. automodule:: pythomac.calculate_convergence
     :members:
     :show-inheritance:
+
+.. automodule:: pythomac.get_convergence_time
+    :members:
+    :show-inheritance:
+
+Plotting
+~~~~~~~~
+
+.. automodule:: pythomac.utils.plots
+    :members:
+    :show-inheritance:
