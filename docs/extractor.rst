@@ -1,13 +1,15 @@
 .. extraction documentation
 
-Extraction Tools
-================
+Convergence Analysis
+====================
 
-Find more background information on `hydro-informatics.com <https://hydro-informatics.com/numerics/telemac/telemac2d-steady.html#verify-steady-tm2d>`_.
+Find more background information on `hydro-informatics.com <https://hydro-informatics.com/numerics/telemac/convergence.html>`_.
 
 Usage Example
 -------------
 
+Minimal
+~~~~~~~
 .. code:: python
 
     from pythomac import extract_fluxes
@@ -17,6 +19,12 @@ Usage Example
     cas_name = "steady2d.cas"
     extract_fluxes(simulation_dir, cas_name, plotting=False)
 
+Full application
+~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ..example_flux_convergence.py
+   :language: python
+   :linenos:
 
 Script and Function docs
 ------------------------
@@ -25,9 +33,11 @@ Script and Function docs
 Extract Fluxes
 ~~~~~~~~~~~~~~
 
-
 .. automodule:: pythomac.extract_fluxes
     :members:
     :show-inheritance:
 
 
+.. automodule:: pythomac.calculate_convergence
+    :members:
+    :show-inheritance:

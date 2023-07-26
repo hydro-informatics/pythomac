@@ -13,14 +13,13 @@ import os
 # data processing
 import pandas as pd
 import numpy as np
-# plotting
-import matplotlib
-import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 # Telemac stuff
 from parser_output import get_latest_output_files
 from parser_output import OutputFileData
+# plot utils
+from utils.plots import plot_df
 
 
 def extract_fluxes(
@@ -108,22 +107,69 @@ def extract_fluxes(
     df.to_csv(os.path.join(model_directory, export_fn))
 
     if plotting:
-        font = {'size': 9}
-        matplotlib.rc('font', **font)
-        fig = plt.figure(figsize=(6, 3), dpi=400)
-        axes = fig.add_subplot()
-        colors = plt.cm.Blues(np.linspace(0, 1, len(df.columns)))
-        markers = ("x", "o", "s", "+", "1", "D", "*", "CARETDOWN", "3", "^", "p", "2")
-        for i, y in enumerate(list(df)):
-            if "flux" in str(y).lower():
-                axes.plot(df.index.values, df[y].abs(), color=colors[i], markersize=2, marker=markers[i], markerfacecolor='none',
-                          markeredgecolor=colors[i], linestyle='-', linewidth=1.0, alpha=0.6, label=y)
-        axes.set_xlim((np.nanmin(df.index.values), np.nanmax(df.index.values)))
-        axes.set_ylim(bottom=0)
-        axes.set_xlabel("Time (s)")
-        axes.set_ylabel("Fluxes (m$^3$/s)")
-        axes.legend(loc="best", facecolor="white", edgecolor="gray", framealpha=0.5)
-        fig.tight_layout()
-        fig.savefig(os.path.join(model_directory, "flux-convergence.png"))
-        print("* Saved plot as " + str(os.path.join(model_directory, "flux-convergence.png")))
+        plot_df(
+            df=df,
+            file_name=str(os.path.join(model_directory, "flux-convergence.png")),
+            x_label="Simulated time (s)",
+            y_label="Fluxes (m$^3$/s)",
+            column_keyword="flux"
+        )
     return df
+
+
+def calculate_convergence(series_1, series_2, conv_constant=1., cas_timestep=1, plot_dir=None):
+    """ Approximate convergence according to
+            https://hydro-informatics.com/numerics/telemac/convergence.html#tm-calculate-convergence
+
+    :param list or np.array series_1: series_1 should converge toward series_2 (both must have the same length)
+    :param list or np.array series_2: series_2 should converge toward series_1 (both must have the same length)
+    :param float conv_constant: a convergence constant to reach (default is 1.0)
+    :param int cas_timestep: the timestep defined in the cas file
+    :param str plot_dir: if a directory is provided, a convergence plot will be saved here
+    :return pandas.DataFrame: with one column, notably the convergence_rate iota as np.array
+    """
+    # calculate the error epsilon between two series
+    epsilon = np.array(abs(series_1 - series_2))
+    # derive epsilon at t and t+1
+    epsilon_t0 = epsilon[:-1]  # cut off last element
+    epsilon_t1 = epsilon[1:]  # cut off element zero
+    # calculate convergence
+    iota = np.emath.logn(epsilon_t0, epsilon_t1) / conv_constant
+
+    iota_df = pd.DataFrame({"Convergence rate": iota})
+    iota_df.set_index(iota_df.index.values * cas_timestep, inplace=True)
+
+    if plot_dir:
+        plot_df(
+            df=iota_df,
+            file_name=str(os.path.join(plot_dir, "convergence-rate.png")),
+            x_label="Simulated time s (-)",
+            y_label="Convergence rate $\iota$ (-)",
+            column_keyword="rate",
+            legend=False
+        )
+
+    return iota_df
+
+
+def get_convergence_time(convergence_rate, convergence_precision=1.0E-4):
+    """
+    Calculate at which simulation time the simulation converged at a desired level of
+        convergence precision
+
+    :param numpy.array convergence_rate: iota calculated with calculate_convergence
+    :param float convergence_precision: define the desired level of convergence precision
+    :return numpy.int64: the time iteration number
+    """
+
+    convergence_diff = np.diff(convergence_rate)
+    idx = np.flatnonzero(abs(convergence_diff) > convergence_precision)[-1] + 1
+
+    if idx < len(convergence_rate) - 1:
+        return idx
+    else:
+        print("WARNING: the desired convergence precision was never reached.")
+        return np.nan
+
+
+

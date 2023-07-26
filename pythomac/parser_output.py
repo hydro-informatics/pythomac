@@ -43,9 +43,9 @@ def get_latest_output_files(input_file):
     return exnames
 
 
-class OutputFileData():
+class OutputFileData:
     """
-    @brief : Read and store data result file
+    @brief : Read and store data from a .sortie results file
     :return:
     """
     def __init__(self, file_name=''):
