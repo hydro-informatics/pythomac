@@ -19,7 +19,7 @@ The open-source software Telemac for numerical modeling already comes with a sui
 .. toctree::
     :hidden:
 
-    Data extraction <extractor>
+    Flux convergence <convergence>
 
 .. toctree::
     :hidden:
