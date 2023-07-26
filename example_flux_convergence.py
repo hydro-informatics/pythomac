@@ -22,7 +22,7 @@ from pythomac import extract_fluxes, calculate_convergence, get_convergence_time
 
 # set directories and define steering (cas) file name
 simulation_dir = str(Path(__file__).parents[1]) + "{0}hytelemac{0}steady2d-tutorial".format(os.sep)
-telemac_cas = "steady2d-fineT.cas"
+telemac_cas = "steady2d-conv.cas"
 print(simulation_dir)
 
 # extract fluxes across boundaries
@@ -49,7 +49,7 @@ iota.to_csv(os.path.join(simulation_dir, "convergence-rate.csv"))
 # identify the timestep at which convergence was reached at a desired precision
 convergence_time_iteration = get_convergence_time(
     convergence_rate=iota["Convergence rate"],
-    convergence_precision=1.0E-12
+    convergence_precision=1.0E-6
 )
 
 if not("nan" in str(convergence_time_iteration).lower()):

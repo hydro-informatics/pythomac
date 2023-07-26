@@ -110,7 +110,7 @@ def extract_fluxes(
         plot_df(
             df=df,
             file_name=str(os.path.join(model_directory, "flux-convergence.png")),
-            x_label="Simulated time (s)",
+            x_label="Timesteps",
             y_label="Fluxes (m$^3$/s)",
             column_keyword="flux"
         )
@@ -143,7 +143,7 @@ def calculate_convergence(series_1, series_2, conv_constant=1., cas_timestep=1, 
         plot_df(
             df=iota_df,
             file_name=str(os.path.join(plot_dir, "convergence-rate.png")),
-            x_label="Simulated time s (-)",
+            x_label="Timesteps",
             y_label="Convergence rate $\iota$ (-)",
             column_keyword="rate",
             legend=False

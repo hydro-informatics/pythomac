@@ -50,6 +50,7 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
         axes.set_ylabel(y_label)
     if legend:
         axes.legend(loc="best", facecolor="white", edgecolor="gray", framealpha=0.5)
+    axes.grid(color="gray", linestyle='-', linewidth=0.5)
     fig.tight_layout()
     fig.savefig(file_name)
     print("* saved plot: " + str(file_name))
