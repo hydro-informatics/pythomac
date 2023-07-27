@@ -83,18 +83,7 @@ panels_add_bootstrap_css = False
 
 html_theme = "sphinx_rtd_theme"  # nature
 html_theme_options = {
-
-    "theme_dev_mode": True,
-    "launch_buttons": {
-        "binderhub_url": "https://mybinder.org",
-        "thebe": True,
-        "notebook_interface": "jupyterlab",
-        "collapse_navigation": False
-    },
-    "repository_url": "https://github.com/hydro-informatics/pythomac",
-    "repository_branch": "main",
-    "use_edit_page_button": False,
-    "use_repository_button": True,
+    "theme_dev_mode": True
 }
 
 html_context = {
@@ -103,7 +92,7 @@ html_context = {
     "github_user": "hydro-informatics",
     "github_repo": "pythomac",
     "github_version": "main/",
-    "conf_py_path": "/docs/"
+    "conf_py_path": "docs/"
 }
 
 if not ("READTHEDOCS" in os.environ):
