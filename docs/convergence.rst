@@ -34,21 +34,7 @@ Script and Function docs
 Flux Analyst
 ~~~~~~~~~~~~~~
 
-``pythomac.extract_fluxes``:
-
-.. automodule:: pythomac.extract_fluxes
-    :members:
-    :show-inheritance:
-
-``pythomac.extract_fluxes``:
-
-.. automodule:: pythomac.calculate_convergence
-    :members:
-    :show-inheritance:
-
-``pythomac.get_convergence_time``:
-
-.. automodule:: pythomac.get_convergence_time
+.. automodule:: pythomac.flux_analyst
     :members:
     :show-inheritance:
 
