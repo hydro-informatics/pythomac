@@ -22,7 +22,7 @@ Minimal
 Full application
 ~~~~~~~~~~~~~~~~
 
-.. literalinclude:: .example_flux_convergence.py
+.. literalinclude:: ../example_flux_convergence.py
    :language: python
    :linenos:
 
