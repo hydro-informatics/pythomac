@@ -22,15 +22,16 @@ Minimal
 Full application
 ~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ..example_flux_convergence.py
+.. literalinclude:: .example_flux_convergence.py
    :language: python
    :linenos:
+
 
 Script and Function docs
 ------------------------
 
 
-Extract Fluxes
+Flux Analyst
 ~~~~~~~~~~~~~~
 
 .. automodule:: pythomac.extract_fluxes
