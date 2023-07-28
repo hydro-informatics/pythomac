@@ -81,8 +81,11 @@ def extract_fluxes(
                     try:
                         if "volume" in str(sub_e[0]).lower():
                             # go here if ('Volumes (m3/s)', [volume(t)])
-                            out_fluxes_dict.update({sub_e[0]: np.array(sub_e[1])})
-                        if "fluxes" in str(sub_e[0]).lower():
+                            if not(len(np.array(sub_e[1])) < 2):
+                                out_fluxes_dict.update({sub_e[0]: np.array(sub_e[1])})
+                            else:
+                                print("WARNING: there is an issue with the simulation: volumes cannot be read.")
+                        if "flux" in str(sub_e[0]).lower():
                             for bound_i, bound_e in enumerate(sub_e[1]):
                                 out_fluxes_dict.update({
                                     "Fluxes {}".format(str(bound_e)): np.array(sub_e[2][bound_i])
