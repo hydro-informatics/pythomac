@@ -75,7 +75,7 @@ class OutputFileData:
                           + r'\s+(TIME)[\s:]*(?P<others>.*?)'
                           + r'(?P<number>\b((?:(\d+)\b)|(?:(\d+(|\.)'
                           + r'\d*[dDeE](\+|\-)?\d+'
-                          + r'|\d+\.\d+))))\s+S\s*(|\))\s*\Z', re.I)
+                          + r'|\d+\.\d*))))\s+S\s*(|\))\s*\Z', re.I)
         itr = []
         time = []
         for line in self.output:
@@ -154,27 +154,27 @@ class OutputFileData:
             r'\s*(INITIAL VOLUME )'
             + r'[\s:]*\s+(?P<value>\b([-+]|)((?:(\d+)\b)|'
             + r'(?:(\d+(|\.)'
-            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d+))))\s+'
+            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d*))))\s+'
             + r'(?P<after>.*?)\s*\Z', re.I)
         form_voltotal = re.compile(
             r'\s*(VOLUME IN THE DOMAIN)[\s:]*'
             + r'\s+(?P<value>\b([-+]|)((?:(\d+)\b)|'
             + r'(?:(\d+(|\.)'
-            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d+))))\s+'
+            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d*))))\s+'
             + r'(?P<after>.*?)\s*\Z', re.I)
         form_volfluxes = re.compile(
             r'\s*(FLUX BOUNDARY)\s+'
             + r'(?P<number>\d+)\s*:\s*'
             + r'(?P<value>[+-]*\b((?:(\d+)\b)|(?:(\d+(|\.)'
-            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d+))))(.\s|\s)+'
+            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d*))))(.\s|\s)+'
             + r'(?P<after>.*?)\s*\Z', re.I)
         form_volerror = re.compile(
             r'\s*(RELATIVE ERROR IN VOLUME AT T '
             + r'=)\s+'
             + r'(?P<at>[+-]*\b((?:(\d+)\b)|(?:(\d+(|\.)'
-            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d+))))\s+S :\s+'
+            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d*))))\s+S :\s+'
             + r'(?P<value>[+-]*\b((?:(\d+)\b)|(?:(\d+(|\.)'
-            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d+))))'
+            + r'\d*[dDeE](\+|\-)?\d+|\d+\.\d*))))'
             + r'\s*\Z', re.I)
         iline = 0
         # ~~ Searches for number of liquid boundaries ~~~~~~~~~~~~~~~~~~~

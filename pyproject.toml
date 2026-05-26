@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pythomac"
-version = "1.0.2"
+version = "1.0.3"
 authors = [
   { name="Hydro-Informatics.com", email="schwindt.water@gmail.com" },
 ]

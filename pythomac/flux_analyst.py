@@ -4,7 +4,7 @@ The codes are inspired by the following jupyter notebook:
  which uses the following example case:
     /examples/telemac2d/bump/t2d_bump_FE.cas
 
-@author: Sebastian Schwindt (July 2023)
+@author: Sebastian Schwindt (July 2023; update: May 2026)
 """
 
 # retrieve file paths - this script must be stored in the directory where the simulation lives
@@ -35,7 +35,7 @@ def extract_fluxes(
         * Make sure to activate the .cas keyword ``PRINTING CUMULATED FLOWRATES : YES``
         * This script skips volume errors (search tags are not implemented).
         * Read more about this script at
-            https://hydro-informatics.com/numerics/telemac/telemac2d-steady.html#verify-steady-tm2d
+            https://hydro-informatics.com/telemac2d-steady/#verify-steady-tm2d
 
     :param str model_directory: the file directory where the simulation lives
     :param str cas_name: name of the .cas steering file (without directory)
@@ -122,7 +122,7 @@ def extract_fluxes(
 
 def calculate_convergence(series_1, series_2, conv_constant=1., cas_timestep=1, plot_dir=None):
     """ Approximate convergence according to
-            https://hydro-informatics.com/numerics/telemac/convergence.html#tm-calculate-convergence
+            https://hydro-informatics.com/convergence/#tm-calculate-convergence
 
     :param list or np.array series_1: series_1 should converge toward series_2 (both must have the same length)
     :param list or np.array series_2: series_2 should converge toward series_1 (both must have the same length)
@@ -147,9 +147,10 @@ def calculate_convergence(series_1, series_2, conv_constant=1., cas_timestep=1, 
             df=iota_df,
             file_name=str(os.path.join(plot_dir, "convergence-rate.png")),
             x_label="Timesteps",
-            y_label="Convergence rate $\iota$ (-)",
+            y_label=r"Convergence rate $c_{\iota(t)}$",
             column_keyword="rate",
-            legend=False
+            legend=False,
+            tight_ylim=True
         )
 
     return iota_df
@@ -173,6 +174,3 @@ def get_convergence_time(convergence_rate, convergence_precision=1.0E-4):
     else:
         print("WARNING: the desired convergence precision was never reached.")
         return np.nan
-
-
-

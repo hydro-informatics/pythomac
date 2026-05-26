@@ -6,7 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 
-def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend=True):
+def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend=True, tight_ylim=False):
     """ Plot a pandas DataFrame as lines with markers. The dataframe index is used for the x-axis.
     The function can handle a maximum of twelve columns
 
@@ -18,6 +18,9 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
     :param str column_keyword: define a keyword that columns must contain to be plotted.
         The default '' (empty string) plots all columns.
     :param bool legend: place a legend (default is ``True``).
+    :param bool tight_ylim: if True, set the y-limits to narrowly embrace the plotted data
+        (with a small margin) instead of anchoring the bottom at zero. Useful when values
+        cluster in a narrow band (e.g., convergence rates around 1.0).
     :return:
     """
 
@@ -27,11 +30,14 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
     axes = fig.add_subplot()
     colors = plt.cm.tab20(np.linspace(0, 1, len(df.columns)))  # https://matplotlib.org/stable/gallery/color/colormap_reference.html
     markers = ("x", "o", "s", "+", "1", "D", "*", "CARETDOWN", "3", "^", "p", "2")
+    plotted_values = []
     for i, y in enumerate(list(df)):
         if column_keyword in str(y).lower():
+            y_values = df[y].abs()
+            plotted_values.append(np.asarray(y_values, dtype=float))
             axes.plot(
                 df.index.values,
-                df[y].abs(),
+                y_values,
                 color=colors[i],
                 markersize=2,
                 marker=markers[i],
@@ -43,7 +49,16 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
                 label=y
             )
     axes.set_xlim((np.nanmin(df.index.values), np.nanmax(df.index.values)))
-    axes.set_ylim(bottom=0)
+    if tight_ylim and plotted_values:
+        all_values = np.concatenate(plotted_values)
+        all_values = all_values[np.isfinite(all_values)]
+        y_min, y_max = np.nanmin(all_values), np.nanmax(all_values)
+        span = y_max - y_min
+        margin = 0.1 * span if span > 0 else max(abs(y_max), 1.0) * 1e-6
+        axes.set_ylim(y_min - margin, y_max + margin)
+    else:
+        axes.set_ylim(bottom=0)
+    axes.tick_params(axis="both", direction="in")
     if x_label:
         axes.set_xlabel(x_label)
     if y_label:
