@@ -20,3 +20,9 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/hydro-informatics/pythomac"
 "Bug Tracker" = "https://github.com/hydro-informatics/pythomac/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pythomac"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/pythomac", "/README.md", "/LICENSE", "/requirements.txt"]
