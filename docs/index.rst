@@ -8,7 +8,7 @@ The open-source software Telemac for numerical modeling already comes with a sui
 
 .. important::
 
-    Extended Python installation instructions are provided on `hydro-informatics.com <https://hydro-informatics.com/python-basics/pyinstall.html>`_.
+    Extended Python installation instructions are provided on `hydro-informatics.com <https://hydro-informatics.com/pyinstall>`_.
 
 
 .. toctree::
