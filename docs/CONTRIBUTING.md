@@ -13,15 +13,22 @@ Make sure to understand the basics of building a PyPI package ([example tutorial
    * `python3 -m pip install --upgrade build`
    * `python3 -m pip install --upgrade twine`
 
+* Make sure to have a `[pypi]` token for pythomac defined in `~/.pypirc` with access token.
+
+
 ## Build and publish
 
 1. Generate distribution archives:
 
+```bash
 python3 -m build
+```
 
-2. Upload distribution archives:
+2. Upload distribution archives (assuming twine is installed within the mamba environment named `wrr-proj`):
 
-twine upload dist/*
+```bash
+TWINE_USERNAME=__token__ mamba run -n wrr-proj python -m twine upload dist/*
+```
 
 
 

@@ -4,16 +4,16 @@ This script features an example for flux extraction and convergence analysis wit
     ``PRINTING CUMULATED FLOWRATES : YES``.
 
 @author: Sebastian Schwindt
-@year: 2023
+@year: 2023, 2026
 
 Usage:
     This script should be placed relative to a Telemac simulation as follows:
-        + Simulation: HOME/hytelemac/steady2d-tutorial/steady2d.cas
+        + Simulation: HOME/hytelemac/steady2d-tutorial/steady2d.cas (ran with -s flag!)
         + This script: HOME/postpro/example_flux_convergence.py
         + To change this behavior, modify the variable simulation_dir
 
 Example:
-    Visit https://hydro-informatics.com/numerics/telemac/convergence.html
+    Visit https://hydro-informatics.com/convergence
 
 """
 import os
@@ -21,8 +21,8 @@ from pathlib import Path
 from pythomac import extract_fluxes, calculate_convergence, get_convergence_time
 
 # set directories and define steering (cas) file name
-simulation_dir = str(Path(__file__).parents[1]) + "{0}hytelemac{0}steady2d-tutorial".format(os.sep)
-telemac_cas = "steady2d-conv.cas"
+simulation_dir = os.path.join(str(Path(__file__).parent), "example-simulation")
+telemac_cas = "steady2d.cas"
 print(simulation_dir)
 
 # extract fluxes across boundaries

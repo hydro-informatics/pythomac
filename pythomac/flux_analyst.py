@@ -1,7 +1,11 @@
 """ Extract data from a Telemac simulation that has already been running.
-The codes are inspired by the following jupyter notebook:
+
+The codes are inspired by the following jupyter notebook::
+
     HOMETEL/notebooks/data_manip/extraction/output_file_extraction.ipynb
- which uses the following example case:
+
+which uses the following example case::
+
     /examples/telemac2d/bump/t2d_bump_FE.cas
 
 @author: Sebastian Schwindt (July 2023; update: May 2026)

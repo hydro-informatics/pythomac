@@ -35,7 +35,7 @@ autodoc_mock_imports = [
 
 project = u"Pythomac"
 slug = re.sub(r"\W+", "-", project.lower())
-version = "1.0.2"
+version = "1.1.0"
 release = "latest"
 author = u"Hydro-Informatics.com"
 copyright = author
@@ -82,9 +82,6 @@ myst_url_schemes = ("http", "https", "mailto")
 panels_add_bootstrap_css = False
 
 html_theme = "sphinx_rtd_theme"  # nature
-html_theme_options = {
-    "theme_dev_mode": True
-}
 
 html_context = {
     "date": datetime.date.today().strftime("%Y-%m-%d"),
@@ -105,9 +102,9 @@ if not ("READTHEDOCS" in os.environ):
         range(1, 100)
     ))
 
-html_favicon = os.path.abspath("..") + "/docs/img/browser-icon.ico"
+html_favicon = "img/browser-icon.ico"
 html_last_updated_fmt = ""
-html_logo = os.path.abspath("..") + "/docs/img/icon.svg"
+html_logo = "img/icon.svg"
 html_show_sourcelink = True
 html_title = "pythomac " + version
 htmlhelp_basename = "Pythomac"
