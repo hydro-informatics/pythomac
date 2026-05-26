@@ -4,6 +4,7 @@ Plot functions based on matplotlib
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 
 def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend=True, tight_ylim=False):
@@ -53,9 +54,16 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
         all_values = np.concatenate(plotted_values)
         all_values = all_values[np.isfinite(all_values)]
         y_min, y_max = np.nanmin(all_values), np.nanmax(all_values)
-        span = y_max - y_min
-        margin = 0.1 * span if span > 0 else max(abs(y_max), 1.0) * 1e-6
-        axes.set_ylim(y_min - margin, y_max + margin)
+        # snap limits to multiples of a nice tick step so gridlines (incl. the
+        # bottom axis and top box line) are evenly spaced
+        tick_values = mticker.MaxNLocator(nbins=6).tick_values(y_min, y_max)
+        tick_step = tick_values[1] - tick_values[0]
+        lower = np.floor(y_min / tick_step) * tick_step
+        upper = np.ceil(y_max / tick_step) * tick_step
+        if upper <= lower:
+            upper = lower + tick_step
+        axes.yaxis.set_major_locator(mticker.MultipleLocator(tick_step))
+        axes.set_ylim(lower, upper)
     else:
         axes.set_ylim(bottom=0)
     axes.tick_params(axis="both", direction="in")
