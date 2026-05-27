@@ -48,8 +48,8 @@ iota_t.to_csv(os.path.join(simulation_dir, "convergence-rate.csv"))
 
 # identify the timestep at which convergence was reached at a desired precision
 convergence_time_iteration = get_convergence_time(
-    convergence_rate=iota_t["Convergence rate"],
-    convergence_precision=1.0E-6
+    relative_imbalance=iota_t["Relative imbalance"],
+    convergence_precision=1.0E-4
 )
 
 if not("nan" in str(convergence_time_iteration).lower()):

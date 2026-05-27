@@ -109,7 +109,7 @@ def extract_fluxes(
         print("ERROR: could not convert dict to DataFrame because:\n" + str(problem))
         return -1
 
-    export_fn = "extracted_fluxes.csv"
+    export_fn = "extracted-fluxes.csv"
     print("* Exporting to {}".format(str(os.path.join(model_directory, export_fn))))
     df.to_csv(os.path.join(model_directory, export_fn))
 
@@ -128,22 +128,33 @@ def calculate_convergence(series_1, series_2, conv_constant=1., cas_timestep=1, 
     """ Approximate convergence according to
             https://hydro-informatics.com/convergence/#tm-calculate-convergence
 
-    :param list or np.array series_1: series_1 should converge toward series_2 (both must have the same length)
-    :param list or np.array series_2: series_2 should converge toward series_1 (both must have the same length)
+    :param list or np.array series_1: inflow flux series Q_in; the relative imbalance is normalized by this series, which should converge toward series_2 (both must have the same length)
+    :param list or np.array series_2: outflow flux series Q_out; should converge toward series_1 (both must have the same length)
     :param float conv_constant: a convergence constant to reach (default is 1.0)
     :param int cas_timestep: the timestep defined in the cas file
     :param str plot_dir: if a directory is provided, a convergence plot will be saved here
-    :return pandas.DataFrame: with one column, notably the convergence_rate iota as np.array
+    :return pandas.DataFrame: columns "Relative imbalance" (Delta_{Q,t}) and "Convergence rate" (iota), indexed by timestep
     """
-    # calculate the error epsilon between two series
-    epsilon = np.array(abs(series_1 - series_2))
+    # relative flux imbalance Delta_{Q,t} = ||Q_in| - |Q_out|| / |Q_in|, normalized by the
+    #   inflow (series_1) so that the imbalance is dimensionless; cf. the mass-flux-error
+    #   equation in the numerics script. Telemac reports boundary fluxes signed (inflow
+    #   positive, outflow negative), so the discharge magnitudes |.| are differenced here:
+    #   balance means |Q_in| == |Q_out|, hence Delta_{Q,t} -> 0 at steady state. Taking the
+    #   magnitudes also keeps the metric robust to momentary reverse flow at a boundary.
+    q_in = np.abs(np.array(series_1))
+    q_out = np.abs(np.array(series_2))
+    epsilon = np.abs(q_in - q_out) / q_in
     # derive epsilon at t and t+1
     epsilon_t0 = epsilon[:-1]  # cut off last element
     epsilon_t1 = epsilon[1:]  # cut off element zero
-    # calculate convergence
+    # convergence rate iota = log with base Delta_{Q,t} of Delta_{Q,t+1}
     iota = np.emath.logn(epsilon_t0, epsilon_t1) / conv_constant
 
-    iota_df = pd.DataFrame({"Convergence rate": iota})
+    # keep the relative imbalance alongside the rate: Delta_{Q,t+1} pairs with iota(t)
+    iota_df = pd.DataFrame({
+        "Relative imbalance": epsilon_t1,
+        "Convergence rate": iota,
+    })
     iota_df.set_index(iota_df.index.values * cas_timestep, inplace=True)
 
     if plot_dir:
@@ -154,27 +165,35 @@ def calculate_convergence(series_1, series_2, conv_constant=1., cas_timestep=1, 
             y_label=r"Convergence rate $c_{\iota(t)}$",
             column_keyword="rate",
             legend=False,
-            tight_ylim=True
+            tight_ylim=True,
+            hline=1.0
         )
 
     return iota_df
 
 
-def get_convergence_time(convergence_rate, convergence_precision=1.0E-4):
+def get_convergence_time(relative_imbalance, convergence_precision=1.0E-4):
     """
-    Calculate at which simulation time the simulation converged at a desired level of
-        convergence precision
+    Identify the optimum simulation length as the smallest output interval index beyond
+        which the relative flux imbalance Delta_{Q,t} (see calculate_convergence) remains
+        permanently below the target tolerance. This implements the optimum-simulation-
+        length criterion described at https://hydro-informatics.com/convergence.
 
-    :param numpy.array convergence_rate: iota calculated with calculate_convergence
-    :param float convergence_precision: define the desired level of convergence precision
-    :return numpy.int64: the time iteration number
+    :param numpy.array relative_imbalance: the Delta_{Q,t} series, e.g. the
+        "Relative imbalance" column returned by calculate_convergence
+    :param float convergence_precision: target tolerance Delta_{Q,tar}; 1e-4 is typically
+        acceptable for preliminary runs, while 1e-6 or smaller is warranted for validation
+        and hotstart initialization runs
+    :return numpy.int64: the time iteration number, or np.nan if the tolerance is never reached
     """
 
-    convergence_diff = np.diff(convergence_rate)
-    idx = np.flatnonzero(abs(convergence_diff) > convergence_precision)[-1] + 1
+    imbalance = np.real(np.asarray(relative_imbalance, dtype=float))
+    below = imbalance < convergence_precision
 
-    if idx < len(convergence_rate) - 1:
-        return idx
-    else:
+    if not below.any() or not below[-1]:
         print("WARNING: the desired convergence precision was never reached.")
         return np.nan
+
+    # smallest index beyond which the imbalance stays permanently below the tolerance
+    not_below = np.flatnonzero(~below)
+    return int(not_below[-1] + 1) if not_below.size else 0

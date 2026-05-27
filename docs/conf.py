@@ -35,7 +35,7 @@ autodoc_mock_imports = [
 
 project = u"Pythomac"
 slug = re.sub(r"\W+", "-", project.lower())
-version = "1.1.0"
+version = "2.0.0"
 release = "latest"
 author = u"Hydro-Informatics.com"
 copyright = author

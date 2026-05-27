@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
 
-def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend=True, tight_ylim=False):
+def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend=True, tight_ylim=False, hline=None):
     """ Plot a pandas DataFrame as lines with markers. The dataframe index is used for the x-axis.
     The function can handle a maximum of twelve columns
 
@@ -22,6 +22,8 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
     :param bool tight_ylim: if True, set the y-limits to narrowly embrace the plotted data
         (with a small margin) instead of anchoring the bottom at zero. Useful when values
         cluster in a narrow band (e.g., convergence rates around 1.0).
+    :param float hline: if set, draw a dashed horizontal reference line at this y-value
+        (excluded from the legend). The y-limits are widened to keep the line visible.
     :return:
     """
 
@@ -29,7 +31,7 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
     matplotlib.rc('font', **font)
     fig = plt.figure(figsize=(6, 3), dpi=400)
     axes = fig.add_subplot()
-    colors = plt.cm.tab20(np.linspace(0, 1, len(df.columns)))  # https://matplotlib.org/stable/gallery/color/colormap_reference.html
+    colors = plt.cm.cool(np.linspace(0, 1, len(df.columns)))  # https://matplotlib.org/stable/gallery/color/colormap_reference.html
     markers = ("x", "o", "s", "+", "1", "D", "*", "CARETDOWN", "3", "^", "p", "2")
     plotted_values = []
     for i, y in enumerate(list(df)):
@@ -54,6 +56,9 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
         all_values = np.concatenate(plotted_values)
         all_values = all_values[np.isfinite(all_values)]
         y_min, y_max = np.nanmin(all_values), np.nanmax(all_values)
+        # widen the band so the reference line stays inside the plotted area
+        if hline is not None:
+            y_min, y_max = min(y_min, hline), max(y_max, hline)
         # snap limits to multiples of a nice tick step so gridlines (incl. the
         # bottom axis and top box line) are evenly spaced
         tick_values = mticker.MaxNLocator(nbins=6).tick_values(y_min, y_max)
@@ -64,8 +69,15 @@ def plot_df(df, file_name, x_label=None, y_label=None, column_keyword="", legend
             upper = lower + tick_step
         axes.yaxis.set_major_locator(mticker.MultipleLocator(tick_step))
         axes.set_ylim(lower, upper)
+        if hline is not None:
+            # force a labeled tick at the reference value (only for this plot)
+            ticks = np.arange(lower, upper + tick_step / 2, tick_step)
+            ticks = np.unique(np.append(ticks, hline))
+            axes.yaxis.set_major_locator(mticker.FixedLocator(ticks))
     else:
         axes.set_ylim(bottom=0)
+    if hline is not None:
+        axes.axhline(y=hline, color="black", linestyle="--", linewidth=0.8, label="_nolegend_")
     axes.tick_params(axis="both", direction="in")
     if x_label:
         axes.set_xlabel(x_label)
