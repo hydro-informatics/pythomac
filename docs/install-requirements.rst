@@ -7,12 +7,17 @@ Installation
 Requirements
 -------------
 
-* NumPy
-* Pandas
+* Python >= 3.9
+* NumPy >= 1.24
+* Pandas >= 2.0
+* Matplotlib >= 3.7
 
-.. code:: python
+The dependencies are installed automatically with ``pip``; to install them
+explicitly:
 
-  pip install numpy, pandas
+.. code:: bash
+
+  pip install "numpy>=1.24" "pandas>=2.0" "matplotlib>=3.7"
 
 
 Installation

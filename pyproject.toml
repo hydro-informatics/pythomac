@@ -1,28 +1,61 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
 name = "pythomac"
-version = "2.0.0"
+version = "3.0.0"
 authors = [
   { name="Hydro-Informatics.com", email="schwindt.water@gmail.com" },
 ]
-description = "A Python package with codes to wrap and control the numerical modeling software Telemac."
+description = "Lightweight post-processing for TELEMAC simulations: flux extraction and convergence analysis outside the TELEMAC Python environment."
 readme = "README.md"
-requires-python = ">=3.7"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+keywords = ["TELEMAC", "hydraulics", "convergence", "mass balance", "post-processing"]
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Hydrology",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+docs = [
+    "sphinx>=7,<9",
+    "sphinx_rtd_theme>=2.0,<4",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/hydro-informatics/pythomac"
+"Documentation" = "https://pythomac.readthedocs.io"
 "Bug Tracker" = "https://github.com/hydro-informatics/pythomac/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pythomac"]
 
 [tool.hatch.build.targets.sdist]
-include = ["/pythomac", "/README.md", "/LICENSE", "/requirements.txt"]
+include = ["/pythomac", "/tests", "/README.md", "/LICENSE"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

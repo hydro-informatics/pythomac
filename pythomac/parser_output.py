@@ -12,11 +12,13 @@ Adapted from HOMETEL.scripts.python.postel by Sebastian Schwindt (2023). Changel
     * removed erroneous 'while not proc' loop in line 233
 """
 import re
-from os import path, walk
 from fnmatch import fnmatch
-from utils.files import get_file_content
-from utils.exceptions import TelemacException
+from os import path, walk
+
 import numpy as np
+
+from pythomac.utils.exceptions import TelemacException
+from pythomac.utils.files import get_file_content
 
 
 def get_latest_output_files(input_file):
@@ -149,7 +151,7 @@ class OutputFileData:
             + r'\s+(LIQUID BOUNDARIES:)\s*\Z', re.I)
         form_liqnumberp = re.compile(
             r'\s*(NUMBER OF LIQUID BOUNDARIES)'
-            + r'\s+(?P<number>\d+)\s*\Z', re.I)
+            + r'[\s:]+(?P<number>\d+)\s*\Z', re.I)
         form_volinitial = re.compile(
             r'\s*(INITIAL VOLUME )'
             + r'[\s:]*\s+(?P<value>\b([-+]|)((?:(\d+)\b)|'
@@ -358,10 +360,7 @@ class OutputFileData:
         # Regular expression for tracer number mass header
         tracer_class = re.compile(r'\s*(TRACER)\s*(?P<tracer_class>\d+):', re.I)
         # Regular expression for total mass
-        total_volume = re.compile(r'\s*(VOLUME AT THE PRESENT TIME STEP)\s+(:)\s*(?P<mass>[-0-9de.+]+)', re.I)
         total_mass_trac = re.compile(r'\s*(QUANTITY AT THE PRESENT TIME STEP)\s+(:)\s*(?P<mass>[-0-9de.+]+)', re.I)
-        # Regular expression for lost mass
-        lost_volume = re.compile(r'\s*(ERROR ON THE VOLUME DURING THIS TIME STEP)\s+(:)\s*(?P<mass>[-0-9de.+]+)', re.I)
         # Regular expression for lost mass
         lost_mass_trac = re.compile(r'\s*(ERROR ON THE QUANTITY DURING THIS TIME STEP)\s+(:)\s*(?P<mass>[-0-9de.+]+)', re.I)
 

@@ -8,22 +8,16 @@ which uses the following example case::
 
     /examples/telemac2d/bump/t2d_bump_FE.cas
 
-@author: Sebastian Schwindt (July 2023; update: May 2026)
+@author: Sebastian Schwindt (July 2023; updates: May and July 2026)
 """
 
-# retrieve file paths - this script must be stored in the directory where the simulation lives
-import sys
 import os
-# data processing
-import pandas as pd
-import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-# Telemac stuff
-from parser_output import get_latest_output_files
-from parser_output import OutputFileData
-# plot utils
-from utils.plots import plot_df
+import numpy as np
+import pandas as pd
+
+from pythomac.parser_output import OutputFileData, get_latest_output_files
+from pythomac.utils.plots import plot_df
 
 
 def extract_fluxes(
@@ -47,30 +41,24 @@ def extract_fluxes(
     :return pandas.DataFrame: time series of fluxes across boundaries (if Error int: -1)
     """
 
-    # assign cas file name in the folder
-    file_name = get_latest_output_files(
-        os.path.join(model_directory,  # os.path.dirname(os.path.realpath(__file__))
-                     cas_name
-                     )
-        )
-
-    # go to working directory
-    try:
-        os.chdir(model_directory)
-    except Exception as problem:
-        print("ERROR: the provided directory {0} does not exist:\n{1}".format(str(model_directory), str(problem)))
+    if not os.path.isdir(model_directory or "."):
+        print(f"ERROR: the provided directory {model_directory} does not exist")
         return -1
+
+    # locate the newest main .sortie listing next to the cas file (absolute paths;
+    # the working directory of the calling process is never changed)
+    file_name = get_latest_output_files(os.path.join(model_directory, cas_name))
 
     try:
         out_file = OutputFileData(file_name[0])
     except Exception as e:
-        print("CAS name: " + str(os.path.join(os.path.dirname(os.path.realpath(__file__)), cas_name)))
-        print("ERROR in file {0}:\n{1}".format(str(file_name), str(e)))
-        print("Recall: the simulation must run with the -s flags")
+        print(f"CAS name: {os.path.join(model_directory, cas_name)}")
+        print(f"ERROR in file {file_name}:\n{e}")
+        print("Recall: the simulation must run with the -s flag")
         return -1
 
-    print("Found study with name: {}".format(out_file.get_name_of_study()))
-    print("The simulation took: {} seconds".format(out_file.get_exec_time()))
+    print(f"Found study with name: {out_file.get_name_of_study()}")
+    print(f"The simulation took: {out_file.get_exec_time()} seconds")
 
     # extract total volume, fluxes, and volume error
     out_fluxes = out_file.get_value_history_output("voltotal;volfluxes;volerror")
@@ -92,12 +80,12 @@ def extract_fluxes(
                         if "flux" in str(sub_e[0]).lower():
                             for bound_i, bound_e in enumerate(sub_e[1]):
                                 out_fluxes_dict.update({
-                                    "Fluxes {}".format(str(bound_e)): np.array(sub_e[2][bound_i])
+                                    f"Fluxes {bound_e}": np.array(sub_e[2][bound_i])
                                 })
                     except Exception as problem:
-                        print("ERROR in intended VOLUME tuple " + str(sub_e[0]) + ":\n" + str(problem))
+                        print(f"ERROR in intended VOLUME tuple {sub_e[0]}:\n{problem}")
         except Exception as problem:
-            print("ERROR in " + str(e[0]) + ":\n" + str(problem))
+            print(f"ERROR in {e[0]}:\n{problem}")
             print("WARNING: Flux series seem empty. Verify:")
             print("         - did you run telemac2d.py sim.cas with the -s flag?")
             print("         - did your define all required VARIABLES FOR GRAPHIC PRINTOUTS (U,V,S,B,Q,F,H)?")
@@ -106,11 +94,11 @@ def extract_fluxes(
         df = pd.DataFrame.from_dict(out_fluxes_dict)
         df.set_index(list(df)[0], inplace=True)
     except Exception as problem:
-        print("ERROR: could not convert dict to DataFrame because:\n" + str(problem))
+        print(f"ERROR: could not convert dict to DataFrame because:\n{problem}")
         return -1
 
     export_fn = "extracted-fluxes.csv"
-    print("* Exporting to {}".format(str(os.path.join(model_directory, export_fn))))
+    print(f"* Exporting to {os.path.join(model_directory, export_fn)}")
     df.to_csv(os.path.join(model_directory, export_fn))
 
     if plotting:
